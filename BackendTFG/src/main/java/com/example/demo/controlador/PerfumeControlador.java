@@ -1,0 +1,20 @@
+package com.example.demo.controlador;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.model.Perfume;
+import com.example.demo.service.PerfumeService;
+@CrossOrigin(origins = "http://localhost:5173") // Permite que React entre
+@RestController // Define la ventana API
+@RequestMapping("/api/perfumes") //define la url base
+public class PerfumeControlador {
+	@Autowired //Traemos el servicio
+	private PerfumeService perfumeService;
+	@GetMapping
+	public List<Perfume> obtenerPerfumes(){
+		return perfumeService.listarPerfumes();
+	}
+}

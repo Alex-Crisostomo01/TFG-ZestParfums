@@ -1,0 +1,42 @@
+package com.example.demo.model;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Entity // Define esta clase como una tabla MySql
+@Table(name="perfumes") // tiene que ser el mismo nombre que en el .sql
+@Data // crea getters setters ToStrings y equals automaticamente
+public class Perfume {
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_perfume") // 👈 En el SQL se llama id_perfume, no id
+    private Long id;
+
+    @Column(nullable = false, length = 150)
+    private String nombre;
+
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
+
+    @Column(nullable = false)
+    private BigDecimal precio; // 👈 En SQL es Decimal, en Java mejor usar BigDecimal
+
+    @Column(nullable = false)
+    private Integer stock;
+
+    @Column(name = "fecha_creacion", insertable = false, updatable = false)
+    private LocalDate fechaCreacion;
+
+    @Column(nullable = false)
+    private Boolean activo = true;
+
+    // Nota técnica: id_marca e id_categoria son FKs. 
+    // De momento las trataremos como Long para que no te dé error.
+    @Column(name = "id_marca")
+    private Long idMarca;
+
+    @Column(name = "id_categoria")
+    private Long idCategoria;
+}

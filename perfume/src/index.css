@@ -1,0 +1,17 @@
+/* src/index.css */
+
+/* Estas 3 líneas son obligatorias para que Tailwind funcione */
+@import "tailwindcss";
+
+/* Estilos globales sencillos para la tienda */
+body {
+  @apply m-0 p-0 antialiased font-sans bg-gray-50 text-gray-900;
+}
+
+/* Forzar que el modo oscuro por defecto de Vite desaparezca de momento */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #111827;
+    background-color: #f9fafb;
+  }
+}

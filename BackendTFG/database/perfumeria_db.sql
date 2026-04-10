@@ -456,8 +456,95 @@ JOIN marcas m ON p.id_marca = m.id_marca
 JOIN categorias c ON p.id_categoria = c.id_categoria
 ORDER BY p.id_perfume;
 
-select * from perfumes;
+
+UPDATE perfumes 
+SET imagen_url = 'sauvage.jpg' 
+WHERE id_perfume = 1;
+
+UPDATE perfumes 
+SET imagen_url = 'hommeIntense.jpg' 
+WHERE id_perfume = 2;
+
+UPDATE perfumes 
+SET imagen_url = 'chanel5.jpg' 
+WHERE id_perfume = 3;
+
+UPDATE perfumes 
+SET imagen_url = 'bleuChanel.jpg' 
+WHERE id_perfume = 4;
 
 UPDATE perfumes 
 SET imagen_url = 'acquaDiGio.jpg' 
 WHERE id_perfume = 5;
+
+UPDATE perfumes 
+SET imagen_url = 'blackOpium.jpg' 
+WHERE id_perfume = 6;
+
+UPDATE perfumes 
+SET imagen_url = 'ysl.jpg' 
+WHERE id_perfume = 7;
+
+UPDATE perfumes 
+SET imagen_url = '1million.jpg' 
+WHERE id_perfume = 8;
+
+UPDATE perfumes 
+SET imagen_url = 'invictus.jpg' 
+WHERE id_perfume = 9;
+
+UPDATE perfumes 
+SET imagen_url = 'jpgLeMale.jpg' 
+WHERE id_perfume = 10;
+
+UPDATE perfumes 
+SET imagen_url = 'eros.jpg' 
+WHERE id_perfume =  11;
+
+UPDATE perfumes 
+SET imagen_url = 'ckOne.jpg' 
+WHERE id_perfume = 12;
+
+UPDATE perfumes 
+SET imagen_url = 'goodGirl.jpg' 
+WHERE id_perfume = 13;
+
+UPDATE perfumes 
+SET imagen_url = 'tlow.jpg' 
+WHERE id_perfume = 14;
+
+UPDATE perfumes 
+SET imagen_url = 'tfbo.jpg' 
+WHERE id_perfume = 15;
+
+ALTER TABLE perfumes ADD COLUMN id_genero INT;
+
+
+UPDATE perfumes 
+SET id_genero = 1 
+WHERE id_perfume IN (1, 2, 4, 7, 8, 9, 10, 11, 14);
+
+-- 2. MUJER (id_genero = 2)
+-- Incluye: Chanel N°5, Black Opium, Good Girl, Black Orchid
+UPDATE perfumes 
+SET id_genero = 2 
+WHERE id_perfume IN (3, 6, 13, 15);
+
+-- 3. UNISEX (id_genero = 3)
+-- Incluye: Acqua di Gio (aunque es muy masculino, suele usarse como fresco unisex) y CK One (el rey de los unisex)
+UPDATE perfumes 
+SET id_genero = 3 
+WHERE id_perfume IN (5, 12);
+
+
+
+SET SQL_SAFE_UPDATES = 0;
+
+-- Ahora ya puedes ejecutar tus updates tranquilos:
+UPDATE perfumes SET stock = 0 WHERE nombre = 'Dior Sauvage';
+
+-- (Opcional) Vuelve a activarlo al terminar por seguridad:
+SET SQL_SAFE_UPDATES = 1;
+
+
+UPDATE perfumes SET en_oferta = 1 WHERE id_perfume = 6;

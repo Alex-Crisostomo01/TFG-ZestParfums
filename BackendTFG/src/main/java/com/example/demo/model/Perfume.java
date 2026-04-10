@@ -2,6 +2,8 @@ package com.example.demo.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 
 
@@ -65,13 +67,7 @@ public class Perfume {
 		this.activo = activo;
 	}
 
-	public Long getIdMarca() {
-		return idMarca;
-	}
 
-	public void setIdMarca(Long idMarca) {
-		this.idMarca = idMarca;
-	}
 
 	public Long getIdCategoria() {
 		return idCategoria;
@@ -80,7 +76,13 @@ public class Perfume {
 	public void setIdCategoria(Long idCategoria) {
 		this.idCategoria = idCategoria;
 	}
+	public String getImagenUrl() {
+    return imagenUrl;
+}
 
+	public void setImagenUrl(String imagenUrl) {
+    this.imagenUrl = imagenUrl;
+}
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_perfume") // 👈 En el SQL se llama id_perfume, no id
@@ -104,11 +106,36 @@ public class Perfume {
     @Column(nullable = false)
     private Boolean activo = true;
 
-    // Nota técnica: id_marca e id_categoria son FKs. 
-    // De momento las trataremos como Long para que no te dé error.
-    @Column(name = "id_marca")
-    private Long idMarca;
+
 
     @Column(name = "id_categoria")
     private Long idCategoria;
+
+	@Column(name = "id_genero")
+    private Integer idGenero;
+	public Integer getIdGenero() { return idGenero; }
+	public void setIdGenero(Integer idGenero) { this.idGenero = idGenero; }
+
+	@Column(name = "imagen_url")
+		private String imagenUrl;
+
+	@ManyToOne
+	@JoinColumn(name = "id_marca")
+	@JsonIgnoreProperties("perfumes")
+	private Marca marca;
+
+	// Getter para la marca
+	public Marca getMarca() { return marca; }
+
+	@Column(name = "en_oferta")
+private Boolean enOferta;
+
+public Boolean getEnOferta() {
+    return enOferta;
+}
+
+public void setEnOferta(Boolean enOferta) {
+    this.enOferta = enOferta;
+}
+	
 }

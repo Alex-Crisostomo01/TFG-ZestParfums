@@ -3,6 +3,7 @@ package com.example.demo.service;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,10 @@ public class PerfumeService {
 	
 	public List<Perfume> listarPerfumes(){
 		List<Perfume> lista = repo.findAll();
-	    System.out.println("Perfumes encontrados: " + lista.size());
-	    if(!lista.isEmpty()){
-	        System.out.println("Nombre del primero: " + lista.get(0).getNombre()); 
-	    }
 	    return lista;
 	}
+	public Optional<Perfume> buscarPorId(Long id) {
+        return repo.findById(id);
+    }
 	}
 

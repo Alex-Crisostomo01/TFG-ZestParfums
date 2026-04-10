@@ -1,21 +1,94 @@
-import { useParams, useNavigate, Link } from 'react-router';
-import { ArrowLeft, ShoppingBag, Heart, Star, Check, Sparkles } from 'lucide-react';
-import { perfumes } from '../data/perfumes';
-import { useCart } from '../context/CartContext';
-import { Header } from '../components/Header';
-import { Cart } from '../components/Cart';
-import { ProductCard } from '../components/ProductCard';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { toast } from 'sonner';
-import { useState } from 'react';
+import { useParams, useNavigate, Link } from "react-router";
+import { ArrowLeft, ShoppingBag, Heart, Star } from "lucide-react";
+import { Perfume } from "../data/perfumes";
+import { useCart } from "../context/CartContext";
+import { Header } from "../components/Header";
+import { Cart } from "../components/Cart";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { toast } from "sonner";
+import { useState, useEffect } from "react";
+import { Sparkles } from "lucide-react";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const perfume = perfumes.find((p) => p.id === Number(id));
+  const [perfume, setPerfume] = useState<Perfume | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`http://localhost:8080/api/perfumes/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Error en la respuesta del servidor");
+        return res.json();
+      })
+      .then((data) => {
+        // Mapeamos los datos de Java (español) a la interfaz de React (inglés)
+        const mapeado: Perfume = {
+          ...data,
+          id: data.id,
+          name: data.nombre || "Perfume sin nombre",
+          // Priorizamos 'descripcion' que es como está en tu Perfume.java
+          description:
+            data.descripcion || "Una esencia exclusiva diseñada para perdurar.",
+          price: data.enOferta
+            ? data.precio * 0.8 // Si está en oferta, aplicamos un 20% de descuento
+            : data.precio,
+
+          originalPrice: data.enOferta ? data.precio : undefined, // Guardamos el precio original
+          discountBadge: data.enOferta ? "-20%" : null,
+          brand: data.marca?.nombre || "Luxe Parfum",
+
+          // Mapeo manual de categorías basado en tus IDs de Java
+          category:
+            data.idCategoria === 1
+              ? "Floral"
+              : data.idCategoria === 2
+                ? "Oriental"
+                : data.idCategoria === 3
+                  ? "Cítrico"
+                  : "General",
+
+          // Mapeo manual de género
+          gender:
+            data.idGenero === 1
+              ? "Masculino"
+              : data.idGenero === 2
+                ? "Femenino"
+                : "Unisex",
+
+          image: data.imagenUrl
+            ? `/productos/${data.imagenUrl}`
+            : "/productos/default.jpg",
+          inStock: data.stock > 0,
+
+          // Valores por defecto para campos que quizás no tienes en DB aún
+          rating: data.rating || 4.5,
+          reviews: data.reviews || 0,
+          notes: data.notas ? data.notas.split(",") : ["Notas premium"],
+          type: "Eau de Parfum",
+          size: "100ml",
+        };
+
+        setPerfume(mapeado);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error cargando detalle:", err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500 animate-pulse">Cargando fragancia...</p>
+      </div>
+    );
+  }
 
   if (!perfume) {
     return (
@@ -23,7 +96,10 @@ export default function ProductDetail() {
         <Header onSearchChange={setSearchQuery} searchValue={searchQuery} />
         <div className="max-w-7xl mx-auto px-4 py-16 text-center">
           <p className="text-gray-500 mb-4">Producto no encontrado</p>
-          <Link to="/" className="text-amber-600 hover:text-amber-700">
+          <Link
+            to="/"
+            className="text-amber-600 hover:text-amber-700 font-medium"
+          >
             Volver al inicio
           </Link>
         </div>
@@ -36,18 +112,12 @@ export default function ProductDetail() {
     toast.success(`${perfume.name} añadido al carrito`);
   };
 
-  // Related products (same category)
-  const relatedProducts = perfumes
-    .filter((p) => p.category === perfume.category && p.id !== perfume.id)
-    .slice(0, 4);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header onSearchChange={setSearchQuery} searchValue={searchQuery} />
       <Cart />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-gray-600 hover:text-black mb-8 transition-colors"
@@ -56,153 +126,98 @@ export default function ProductDetail() {
           Volver
         </button>
 
-        {/* Product Details */}
         <div className="grid md:grid-cols-2 gap-12 mb-16">
-          {/* Image */}
-          <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-gray-200">
+          <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm">
             <ImageWithFallback
               src={perfume.image}
               alt={perfume.name}
               className="w-full h-full object-cover"
             />
-            {perfume.originalPrice && (
-              <div className="absolute top-4 left-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                Oferta -{Math.round(((perfume.originalPrice - perfume.price) / perfume.originalPrice) * 100)}%
-              </div>
-            )}
           </div>
 
-          {/* Info */}
           <div className="flex flex-col">
-            {/* Brand */}
-            <p className="text-sm text-gray-500 tracking-wider uppercase mb-2">
+            <p className="text-sm text-gray-400 tracking-widest uppercase mb-2 font-medium">
               {perfume.brand}
             </p>
 
-            {/* Name */}
-            <h1 className="text-4xl font-light mb-4">{perfume.name}</h1>
+            <h1 className="text-4xl font-light mb-4 text-gray-900">
+              {perfume.name}
+            </h1>
 
-            {/* Rating */}
             <div className="flex items-center gap-2 mb-6">
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     className={`w-4 h-4 ${
-                      i < Math.floor(perfume.rating)
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'text-gray-300'
+                      i < Math.floor(perfume.rating || 0)
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-gray-200"
                     }`}
                   />
                 ))}
               </div>
-              <span className="text-sm font-medium">{perfume.rating}</span>
-              <span className="text-sm text-gray-500">({perfume.reviews} reseñas)</span>
+              <span className="text-sm font-medium text-gray-600">
+                {perfume.rating}
+              </span>
             </div>
 
-            {/* Price */}
-            <div className="flex items-center gap-3 mb-6">
-              <span className="text-3xl font-semibold">€{perfume.price.toFixed(2)}</span>
-              {perfume.originalPrice && (
-                <span className="text-xl text-gray-500 line-through">
-                  €{perfume.originalPrice.toFixed(2)}
+            {/* Sección de Precios */}
+            <div className="flex items-center gap-4 mb-6">
+              <span className="text-3xl font-semibold text-red-600">
+                €{Number(perfume.price).toFixed(2)}
+              </span>
+              {perfume.enOferta && (
+                <span className="text-xl text-gray-400 line-through">
+                  €{Number(perfume.originalPrice).toFixed(2)}
                 </span>
               )}
             </div>
 
-            {/* Description */}
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              {perfume.description}
+            <p className="text-gray-600 mb-8 leading-relaxed text-lg italic">
+              "{perfume.description}"
             </p>
 
-            {/* Details */}
-            <div className="space-y-3 mb-8 pb-8 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Categoría</span>
-                <span className="text-sm font-medium capitalize">{perfume.category}</span>
+            <div className="space-y-4 mb-8 pb-8 border-b border-gray-200">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">Categoría</span>
+                <span className="font-semibold text-gray-800 capitalize">
+                  {perfume.category}
+                </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Género</span>
-                <span className="text-sm font-medium capitalize">{perfume.gender}</span>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">Género</span>
+                <span className="font-semibold text-gray-800 capitalize">
+                  {perfume.gender}
+                </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Tipo</span>
-                <span className="text-sm font-medium">{perfume.type.replace('-', ' ')}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Tamaño</span>
-                <span className="text-sm font-medium">{perfume.size}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Stock</span>
-                <span className={`text-sm font-medium ${perfume.inStock ? 'text-green-600' : 'text-red-600'}`}>
-                  {perfume.inStock ? 'Disponible' : 'Agotado'}
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">Stock</span>
+                <span
+                  className={`font-bold ${perfume.inStock ? "text-green-600" : "text-red-500"}`}
+                >
+                  {perfume.inStock
+                    ? "✓ Disponible en tienda"
+                    : "✗ Agotado temporalmente"}
                 </span>
               </div>
             </div>
 
-            {/* Notes */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-amber-600" />
-                <h3 className="font-medium">Notas olfativas</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {perfume.notes.map((note, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-amber-50 text-amber-700 text-sm rounded-full"
-                  >
-                    {note}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-3 mt-auto">
+            <div className="flex gap-4 mt-auto">
               <button
                 onClick={handleAddToCart}
                 disabled={!perfume.inStock}
-                className="flex-1 bg-black text-white py-4 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="flex-1 bg-black text-white py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-800 transition-all active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 disabled:scale-100 disabled:cursor-not-allowed"
               >
                 <ShoppingBag className="w-5 h-5" />
-                {perfume.inStock ? 'Añadir al carrito' : 'Agotado'}
+                {perfume.inStock ? "Añadir al carrito" : "Sin existencias"}
               </button>
-              <button className="w-14 h-14 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
-                <Heart className="w-5 h-5" />
+              <button className="w-14 h-14 border border-gray-200 rounded-xl flex items-center justify-center hover:bg-white hover:border-black transition-all active:scale-95">
+                <Heart className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors" />
               </button>
-            </div>
-
-            {/* Benefits */}
-            <div className="mt-8 space-y-2">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Check className="w-4 h-4 text-green-600" />
-                Envío gratis en pedidos superiores a €50
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Check className="w-4 h-4 text-green-600" />
-                Devoluciones gratuitas en 30 días
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Check className="w-4 h-4 text-green-600" />
-                Auténtico y sellado de fábrica
-              </div>
             </div>
           </div>
         </div>
-
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-light mb-6">También te puede gustar</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((product) => (
-                <ProductCard key={product.id} perfume={product} />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

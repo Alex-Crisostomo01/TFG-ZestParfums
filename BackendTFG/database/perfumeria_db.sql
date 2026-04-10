@@ -342,3 +342,122 @@ VALUES (1, 'Especial Verano', 1);
 
 INSERT INTO perfumes (id_marca, id_categoria, nombre, precio, stock, activo) 
 VALUES (1, 1, 'Chanel Nº5', 120.50, 5, 1);
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+TRUNCATE TABLE perfumes;
+TRUNCATE TABLE marcas;
+TRUNCATE TABLE categorias;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+START TRANSACTION;
+
+-- 1) MARCAS (10)
+INSERT INTO marcas (id_marca, nombre, pais_origen) VALUES
+(1, 'Dior', 'Francia'),
+(2, 'Chanel', 'Francia'),
+(3, 'Giorgio Armani', 'Italia'),
+(4, 'Yves Saint Laurent', 'Francia'),
+(5, 'Paco Rabanne', 'España'),
+(6, 'Jean Paul Gaultier', 'Francia'),
+(7, 'Versace', 'Italia'),
+(8, 'Calvin Klein', 'Estados Unidos'),
+(9, 'Carolina Herrera', 'Venezuela'),
+(10, 'Tom Ford', 'Estados Unidos');
+
+-- 2) CATEGORIAS (5)
+INSERT INTO categorias (id_categoria, nombre) VALUES
+(1, 'Amaderado'),
+(2, 'Fresco'),
+(3, 'Oriental'),
+(4, 'Floral'),
+(5, 'Aromatico');
+
+-- 3) PERFUMES (15)
+INSERT INTO perfumes
+(id_perfume, id_marca, id_categoria, nombre, descripcion, precio, stock, activo)
+VALUES
+-- Dior
+(1, 1, 1, 'Dior Sauvage',
+ 'Fragancia masculina de caracter fresco y amaderado',
+ 89.90, 50, 1),
+
+(2, 1, 3, 'Dior Homme Intense',
+ 'Perfume elegante con notas intensas y sofisticadas',
+ 109.90, 30, 1),
+
+-- Chanel
+(3, 2, 4, 'Chanel N°5',
+ 'Fragancia floral iconica de estilo clasico',
+ 124.90, 25, 1),
+
+(4, 2, 5, 'Bleu de Chanel',
+ 'Perfume aromatico fresco con fondo amaderado',
+ 112.00, 40, 1),
+
+-- Giorgio Armani
+(5, 3, 2, 'Acqua di Gio',
+ 'Fragancia fresca inspirada en el mar Mediterraneo',
+ 84.90, 60, 1),
+
+-- Yves Saint Laurent
+(6, 4, 3, 'YSL Black Opium',
+ 'Perfume oriental con notas dulces e intensas',
+ 98.50, 35, 1),
+
+(7, 4, 5, 'Y Eau de Parfum',
+ 'Fragancia aromatica moderna y equilibrada',
+ 92.00, 45, 1),
+
+-- Paco Rabanne
+(8, 5, 3, '1 Million',
+ 'Perfume oriental especiado con caracter intenso',
+ 88.00, 55, 1),
+
+(9, 5, 1, 'Invictus',
+ 'Fragancia fresca y amaderada de espiritu deportivo',
+ 86.90, 50, 1),
+
+-- Jean Paul Gaultier
+(10, 6, 3, 'Le Male',
+ 'Perfume oriental aromatico con toques dulces',
+ 82.00, 40, 1),
+
+-- Versace
+(11, 7, 1, 'Versace Eros',
+ 'Fragancia amaderada intensa y juvenil',
+ 79.90, 45, 1),
+
+-- Calvin Klein
+(12, 8, 2, 'CK One',
+ 'Perfume fresco unisex de estilo limpio',
+ 59.90, 70, 1),
+
+-- Carolina Herrera
+(13, 9, 3, 'Good Girl',
+ 'Fragancia oriental dulce con notas contrastadas',
+ 99.90, 30, 1),
+
+-- Tom Ford (2 perfumes)
+(14, 10, 1, 'Tom Ford Oud Wood',
+ 'Perfume amaderado exclusivo con notas profundas',
+ 179.00, 20, 1),
+
+(15, 10, 3, 'Tom Ford Black Orchid',
+ 'Fragancia intensa y oscura con perfil oriental sofisticado',
+ 164.00, 18, 1);
+
+COMMIT;
+
+SELECT p.id_perfume, p.nombre, m.nombre AS marca, c.nombre AS categoria, p.precio, p.stock
+FROM perfumes p
+JOIN marcas m ON p.id_marca = m.id_marca
+JOIN categorias c ON p.id_categoria = c.id_categoria
+ORDER BY p.id_perfume;
+
+select * from perfumes;
+
+UPDATE perfumes 
+SET imagen_url = 'acquaDiGio.jpg' 
+WHERE id_perfume = 5;

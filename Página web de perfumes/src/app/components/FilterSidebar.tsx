@@ -1,6 +1,6 @@
-import { ChevronDown, ChevronUp, SlidersHorizontal } from 'lucide-react';
-import { useState } from 'react';
-import { categories, brands, genders, types } from '../data/perfumes';
+import { ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
+import { categories, brands, genders, types } from "../data/perfumes";
 
 export interface Filters {
   category: string;
@@ -17,22 +17,29 @@ interface FilterSidebarProps {
   onFilterChange: (filters: Filters) => void;
   isMobile?: boolean;
   onClose?: () => void;
+  marcas?: any[]; // Agregado para recibir las marcas desde Home
 }
 
-export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClose }: FilterSidebarProps) {
+export function FilterSidebar({
+  filters,
+  onFilterChange,
+  isMobile = false,
+  onClose,
+  marcas = [],
+}: FilterSidebarProps) {
   const [expandedSections, setExpandedSections] = useState({
     category: true,
     brand: true,
     gender: true,
     type: true,
     price: true,
-    other: true
+    other: true,
   });
 
   const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
@@ -42,24 +49,24 @@ export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClo
 
   const resetFilters = () => {
     onFilterChange({
-      category: 'all',
-      brand: 'all',
-      gender: 'all',
-      type: 'all',
+      category: "all",
+      brand: "all",
+      gender: "all",
+      type: "all",
       priceRange: [0, 300],
       onlyInStock: false,
-      onSale: false
+      onSale: false,
     });
   };
 
-  const FilterSection = ({ 
-    title, 
-    id, 
-    children 
-  }: { 
-    title: string; 
-    id: keyof typeof expandedSections; 
-    children: React.ReactNode 
+  const FilterSection = ({
+    title,
+    id,
+    children,
+  }: {
+    title: string;
+    id: keyof typeof expandedSections;
+    children: React.ReactNode;
   }) => (
     <div className="border-b border-gray-200 pb-4">
       <button
@@ -78,7 +85,7 @@ export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClo
   );
 
   return (
-    <div className={`${isMobile ? 'p-4' : 'space-y-6'}`}>
+    <div className={`${isMobile ? "p-4" : "space-y-6"}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
@@ -96,13 +103,16 @@ export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClo
       {/* Categories */}
       <FilterSection title="Categoría" id="category">
         {categories.map((cat) => (
-          <label key={cat.value} className="flex items-center gap-2 cursor-pointer">
+          <label
+            key={cat.value}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <input
               type="radio"
               name="category"
               value={cat.value}
               checked={filters.category === cat.value}
-              onChange={(e) => handleFilterChange('category', e.target.value)}
+              onChange={(e) => handleFilterChange("category", e.target.value)}
               className="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500"
             />
             <span className="text-sm">{cat.label}</span>
@@ -113,13 +123,16 @@ export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClo
       {/* Gender */}
       <FilterSection title="Género" id="gender">
         {genders.map((gender) => (
-          <label key={gender.value} className="flex items-center gap-2 cursor-pointer">
+          <label
+            key={gender.value}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <input
               type="radio"
               name="gender"
               value={gender.value}
               checked={filters.gender === gender.value}
-              onChange={(e) => handleFilterChange('gender', e.target.value)}
+              onChange={(e) => handleFilterChange("gender", e.target.value)}
               className="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500"
             />
             <span className="text-sm">{gender.label}</span>
@@ -129,34 +142,34 @@ export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClo
 
       {/* Brand */}
       <FilterSection title="Marca" id="brand">
-        {brands.map((brand) => (
-          <label key={brand.value} className="flex items-center gap-2 cursor-pointer">
+        {/* Opción por defecto siempre visible */}
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="radio"
+            name="brand"
+            value="all"
+            checked={filters.brand === "all"}
+            onChange={(e) => handleFilterChange("brand", e.target.value)}
+            className="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500"
+          />
+          <span className="text-sm">Todas las marcas</span>
+        </label>
+
+        {/* Mapeo de marcas traídas del Backend */}
+        {marcas.map((m) => (
+          <label
+            key={m.idMarca || m.id_marca}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <input
               type="radio"
               name="brand"
-              value={brand.value}
-              checked={filters.brand === brand.value}
-              onChange={(e) => handleFilterChange('brand', e.target.value)}
+              value={m.nombre}
+              checked={filters.brand === m.nombre}
+              onChange={(e) => handleFilterChange("brand", e.target.value)}
               className="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500"
             />
-            <span className="text-sm">{brand.label}</span>
-          </label>
-        ))}
-      </FilterSection>
-
-      {/* Type */}
-      <FilterSection title="Tipo" id="type">
-        {types.map((type) => (
-          <label key={type.value} className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="type"
-              value={type.value}
-              checked={filters.type === type.value}
-              onChange={(e) => handleFilterChange('type', e.target.value)}
-              className="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500"
-            />
-            <span className="text-sm">{type.label}</span>
+            <span className="text-sm">{m.nombre}</span>
           </label>
         ))}
       </FilterSection>
@@ -171,7 +184,7 @@ export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClo
             step="10"
             value={filters.priceRange[1]}
             onChange={(e) =>
-              handleFilterChange('priceRange', [0, parseInt(e.target.value)])
+              handleFilterChange("priceRange", [0, parseInt(e.target.value)])
             }
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
           />
@@ -188,7 +201,9 @@ export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClo
           <input
             type="checkbox"
             checked={filters.onlyInStock}
-            onChange={(e) => handleFilterChange('onlyInStock', e.target.checked)}
+            onChange={(e) =>
+              handleFilterChange("onlyInStock", e.target.checked)
+            }
             className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
           />
           <span className="text-sm">Solo en stock</span>
@@ -197,7 +212,7 @@ export function FilterSidebar({ filters, onFilterChange, isMobile = false, onClo
           <input
             type="checkbox"
             checked={filters.onSale}
-            onChange={(e) => handleFilterChange('onSale', e.target.checked)}
+            onChange={(e) => handleFilterChange("onSale", e.target.checked)}
             className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
           />
           <span className="text-sm">En oferta</span>

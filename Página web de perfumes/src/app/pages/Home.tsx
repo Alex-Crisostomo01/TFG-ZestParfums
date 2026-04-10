@@ -8,6 +8,7 @@ import { Perfume } from "../data/perfumes";
 
 export default function Home() {
   const [backendPerfumes, setBackendPerfumes] = useState<Perfume[]>([]);
+  const [marcasDB, setMarcasDB] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isDesktopFilterOpen, setIsDesktopFilterOpen] = useState(true);
@@ -23,39 +24,71 @@ export default function Home() {
 
   // Código para tus compañeros de React
   useEffect(() => {
-    fetch("http://localhost:8080/api/perfumes")
+    fetch("http://localhost:8080/api/marcas")
       .then((res) => res.json())
-      // 💡 Mapeamos los datos de Java al formato de la interfaz Perfume.ts
+      .then((data) => setMarcasDB(data))
+      .catch((err) => console.error("Error cargando marcas:", err));
+    fetch("http://localhost:8080/api/perfumes") // Conexion con nuestra api donde recogemos los datos de los perfumes
+      .then((res) => res.json())
       .then((data) => {
         const perfumesMapeados = data.map((p: any) => {
-          // 💡 IMPORTANTE: Aquí hacemos el puente entre el número de SQL y el texto de React
-          let categoriaTexto = "oriental"; // Valor por defecto
-
-          // Comprobamos el nombre que venga en tu JSON (mira el navegador para confirmar)
+          // 1. Definimos la categoría (Traducción de ID a Texto)
+          let categoriaTexto = "oriental";
           const idCat = p.idCategoria || p.id_categoria;
+          switch (idCat) {
+            case 1:
+              categoriaTexto = "amaderado";
+              break;
+            case 2:
+              categoriaTexto = "fresco";
+              break;
+            case 3:
+              categoriaTexto = "oriental";
+              break;
+            case 4:
+              categoriaTexto = "floral";
+              break;
+            case 5:
+              categoriaTexto = "aromatico";
+              break;
+            default:
+              categoriaTexto = "oriental";
+          }
+          const marcaEncontrada = p.marca?.nombre || "Perfume Zets";
+          // 2. Extraemos el nombre de la imagen
+          const nombreImagen = p.imagenUrl || p.imagen_url;
 
-          if (idCat === 1) categoriaTexto = "oriental";
-          if (idCat === 2) categoriaTexto = "floral";
-          if (idCat === 3) categoriaTexto = "fresh";
-          if (idCat === 4) categoriaTexto = "woody";
-          console.log("Categoria asignada:", categoriaTexto);
+          let generoTexto = "unisex"; // Valor por defecto
+          const idGen = p.idGenero || p.id_genero || p.id_Genero; // Asegúrate de que este campo venga de tu SQL
+          if (idGen === 1) generoTexto = "hombre";
+          else if (idGen === 2) generoTexto = "mujer";
+          else if (idGen === 3) generoTexto = "unisex";
 
+          const isSale =
+            p.enOferta === true || p.en_oferta === true || p.enOferta === 1;
+          const precioBase = p.precio || 0;
+
+          // 3. Devolvemos el objeto formateado
           return {
             ...p,
             id: p.id_perfume || p.id,
             name: p.nombre,
-            price: p.precio,
-            category: categoriaTexto, // 👈 Esto es lo que usa el filtro de la izquierda
-            brand: "Maison Luxe",
-            image:
-              p.imagen_url ||
-              "https://images.unsplash.com/photo-1541643600914-78b084683601?w=500&q=80",
+            price: isSale ? precioBase * 0.8 : precioBase,
+            originalPrice: precioBase,
+            category: categoriaTexto, //  Esto ahora coincide con cat.value
+            image: p.imagenUrl
+              ? `/productos/${p.imagenUrl}`
+              : "/productos/default.jpg",
+            brand: marcaEncontrada, // Luego haremos lo mismo con id_marca
+            gender: generoTexto,
             inStock: p.stock > 0,
             rating: 4.5,
             reviews: 10,
             notes: ["Fragancia"],
+            onSale: p.enOferta === true || p.en_oferta === 1,
           };
         });
+
         setBackendPerfumes(perfumesMapeados);
       })
       .catch((err) => console.error("Error conectando al Backend:", err));
@@ -81,8 +114,24 @@ export default function Home() {
       if (perfume.price > filters.priceRange[1]) {
         return false;
       }
+      // 4. Filtro de marca
+      if (filters.brand !== "all" && perfume.brand !== filters.brand) {
+        return false;
+      }
+      if (filters.gender !== "all") {
+        if (perfume.gender.toLowerCase() !== filters.gender.toLowerCase()) {
+          return false;
+        }
+      }
+      if (filters.onlyInStock && !perfume.inStock) {
+        return false;
+      }
 
-      return true; // ✅ Si pasa todos los filtros, se muestra
+      if (filters.onSale && !perfume.onSale) {
+        return false;
+      }
+
+      return true; //  Si pasa todos los filtros, se muestra
     });
   }, [searchQuery, filters, backendPerfumes]);
   return (
@@ -118,6 +167,7 @@ export default function Home() {
                   <FilterSidebar
                     filters={filters}
                     onFilterChange={setFilters}
+                    marcas={marcasDB}
                   />
                 </div>
               )}
@@ -207,6 +257,7 @@ export default function Home() {
               onFilterChange={setFilters}
               isMobile
               onClose={() => setIsMobileFilterOpen(false)}
+              marcas={marcasDB}
             />
           </div>
         </>

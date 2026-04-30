@@ -45,12 +45,16 @@ export default function ProductDetail() {
           // Mapeo manual de categorías basado en tus IDs de Java
           category:
             data.idCategoria === 1
-              ? "Floral"
+              ? "Amaderado"
               : data.idCategoria === 2
-                ? "Oriental"
+                ? "Fresco"
                 : data.idCategoria === 3
-                  ? "Cítrico"
-                  : "General",
+                  ? "Oriental"
+                  : data.idCategoria === 4
+                    ? "Floral"
+                    : data.idCategoria === 5
+                      ? "Aromatico"
+                      : "General",
 
           // Mapeo manual de género
           gender:

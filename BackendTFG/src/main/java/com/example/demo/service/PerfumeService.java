@@ -23,5 +23,12 @@ public class PerfumeService {
 	public Optional<Perfume> buscarPorId(Long id) {
         return repo.findById(id);
     }
+
+	public List<Perfume> filtrarPerfumes(Long idMarca, Integer idGenero, Boolean oferta) {
+    if (idMarca != null) return repo.findByMarcaIdMarca(idMarca);
+    if (idGenero != null) return repo.findByIdGenero(idGenero);
+    if (oferta != null && oferta) return repo.findByEnOfertaTrue();
+    return repo.findAll();
+}
 	}
 

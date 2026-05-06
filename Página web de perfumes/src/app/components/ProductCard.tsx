@@ -1,5 +1,5 @@
 import { ShoppingBag, Star, Heart } from "lucide-react";
-import { Link } from "react-router"; // Asegúrate de que sea 'react-router-dom' si usas v6+
+import { Link } from "react-router-dom";
 import { Perfume } from "../data/perfumes";
 import { useCart } from "../context/CartContext";
 import { ImageWithFallback } from "./figma/ImageWithFallback";

@@ -158,7 +158,7 @@ export function FilterSidebar({
         {/* Mapeo de marcas traídas del Backend */}
         {marcas.map((m) => (
           <label
-            key={m.idMarca || m.id_marca}
+            key={m.id ?? m.idMarca ?? m.id_marca ?? m.nombre}
             className="flex items-center gap-2 cursor-pointer"
           >
             <input

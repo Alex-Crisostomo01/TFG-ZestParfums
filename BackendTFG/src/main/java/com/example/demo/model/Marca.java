@@ -1,26 +1,40 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+/**
+ * ENTIDAD: Marca
+ * Justificación TFG: Representa la tabla 'marcas' en la BD. 
+ * Se utiliza @Column para mapear nombres de Java con nombres reales de la BD
+ * evitando errores de 'Unknown column' y manteniendo la integridad referencial.
+ */
 @Entity
 @Table(name = "marcas")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Marca {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_Marca")
-    private Long idMarca;
+    @Column(name = "id_marca") // Coincide con tu captura de pantalla
+    private Long id;
 
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    // Getters y Setters (¡Importantes para que React vea los datos!)
-    public Long getIdMarca() { return idMarca; }
-    public void setIdMarca(Long idMarca) { this.idMarca = idMarca; }
+    @Column(name = "pais_origen")
+    private String paisOrigen;
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    @Column(name = "descripcion", columnDefinition = "TEXT")
+    private String descripcion;
+
+    @Column(name = "activo")
+    private Integer activo; // Usamos Integer porque en tu imagen aparece como 1
+
+    @Column(name = "logo_url")
+    private String logoUrl;
 }

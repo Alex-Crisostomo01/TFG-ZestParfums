@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Link } from "react-router";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, ShoppingBag, Heart, Star } from "lucide-react";
 import { Perfume } from "../data/perfumes";
 import { useCart } from "../context/CartContext";
@@ -8,6 +8,40 @@ import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { Sparkles } from "lucide-react";
+import api from "../../api/axios";
+
+interface BackendMarcaDTO {
+  id?: number;
+  nombre: string;
+}
+
+interface BackendPerfumeDTO {
+  id?: number;
+  nombre: string;
+  descripcion?: string;
+  precio?: number;
+  imagenUrl?: string;
+  idCategoria?: number;
+  categoria?: string;
+  idGenero?: number;
+  genero?: string;
+  stock?: number;
+  enOferta?: boolean;
+  marca?: BackendMarcaDTO;
+}
+
+const formatCategoryLabel = (categoria?: string) => {
+  if (!categoria) return "General";
+  const normalized = categoria.trim();
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1).toLowerCase();
+};
+
+const normalizeGender = (genero?: string) => {
+  const value = genero?.toLowerCase() || "unisex";
+  if (value.includes("hombre") || value.includes("masculino")) return "hombre";
+  if (value.includes("mujer") || value.includes("femenino")) return "mujer";
+  return "unisex";
+};
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -19,71 +53,42 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`http://localhost:8080/api/perfumes/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Error en la respuesta del servidor");
-        return res.json();
-      })
-      .then((data) => {
-        // Mapeamos los datos de Java (español) a la interfaz de React (inglés)
-        const mapeado: Perfume = {
-          ...data,
-          id: data.id,
+    const loadDetail = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get<BackendPerfumeDTO>(`/perfumes/${id}`);
+        const data = response.data;
+
+        const safePrice = Number(data.precio ?? 0);
+        const mapped: Perfume = {
+          id: Number(data.id ?? 0),
           name: data.nombre || "Perfume sin nombre",
-          // Priorizamos 'descripcion' que es como está en tu Perfume.java
           description:
             data.descripcion || "Una esencia exclusiva diseñada para perdurar.",
-          price: data.enOferta
-            ? data.precio * 0.8 // Si está en oferta, aplicamos un 20% de descuento
-            : data.precio,
-
-          originalPrice: data.enOferta ? data.precio : undefined, // Guardamos el precio original
-          discountBadge: data.enOferta ? "-20%" : null,
-          brand: data.marca?.nombre || "Luxe Parfum",
-
-          // Mapeo manual de categorías basado en tus IDs de Java
-          category:
-            data.idCategoria === 1
-              ? "Amaderado"
-              : data.idCategoria === 2
-                ? "Fresco"
-                : data.idCategoria === 3
-                  ? "Oriental"
-                  : data.idCategoria === 4
-                    ? "Floral"
-                    : data.idCategoria === 5
-                      ? "Aromatico"
-                      : "General",
-
-          // Mapeo manual de género
-          gender:
-            data.idGenero === 1
-              ? "Masculino"
-              : data.idGenero === 2
-                ? "Femenino"
-                : "Unisex",
-
-          image: data.imagenUrl
-            ? `/productos/${data.imagenUrl}`
-            : "/productos/default.jpg",
-          inStock: data.stock > 0,
-
-          // Valores por defecto para campos que quizás no tienes en DB aún
-          rating: data.rating || 4.5,
-          reviews: data.reviews || 0,
-          notes: data.notas ? data.notas.split(",") : ["Notas premium"],
-          type: "Eau de Parfum",
-          size: "100ml",
+          price: data.enOferta ? safePrice * 0.8 : safePrice,
+          originalPrice: data.enOferta ? safePrice : undefined,
+          enOferta: data.enOferta ?? false,
+          image: data.imagenUrl?.startsWith("http")
+            ? data.imagenUrl
+            : `/productos/${data.imagenUrl || "default.jpg"}`,
+          brand: data.marca?.nombre || "Marca desconocida",
+          category: formatCategoryLabel(data.categoria),
+          gender: normalizeGender(data.genero),
+          inStock: (data.stock ?? 0) > 0,
+          onSale: data.enOferta ?? false,
+          rating: 4.5,
+          reviews: 0,
         };
 
-        setPerfume(mapeado);
-        setLoading(false);
-      })
-      .catch((err) => {
+        setPerfume(mapped);
+      } catch (err) {
         console.error("Error cargando detalle:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    loadDetail();
   }, [id]);
 
   if (loading) {

@@ -1,28 +1,40 @@
 package com.example.demo.controlador;
 
+import com.example.demo.model.Marca;
+import com.example.demo.service.MarcaService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.demo.model.Marca;
-import com.example.demo.repository.MarcaRepository;
-
-@RestController 
+@RestController
 @RequestMapping("/api/marcas")
-@CrossOrigin(origins = "*") // Para que React pueda conectar
+@CrossOrigin(origins = "http://localhost:5173")
 public class MarcaController {
 
-    @Autowired
-    private MarcaRepository marcaRepository; // Asegúrate de tener este Repository creado
+    private final MarcaService marcaService;
 
+    public MarcaController(MarcaService marcaService) {
+        this.marcaService = marcaService;
+    }
+
+    /**
+     * Endpoint para obtener todas las marcas.
+     * Justificación TFG: Permite al Frontend rellenar los filtros del catálogo.
+     */
     @GetMapping
-    public List<Marca> listarTodas() {
-        return marcaRepository.findAll();
+    public ResponseEntity<List<Marca>> getAllMarcas() {
+        List<Marca> marcas = marcaService.listarTodas();
+        if (marcas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(marcas);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Marca> getMarcaById(@PathVariable Long id) {
+        return marcaService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
-
-

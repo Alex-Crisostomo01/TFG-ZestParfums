@@ -1,141 +1,94 @@
 package com.example.demo.model;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-
-@Entity // Define esta clase como una tabla MySql
-@Table(name="perfumes") // tiene que ser el mismo nombre que en el .sql
-
+@Entity
+@Table(name = "perfumes")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Perfume {
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
-
-	public BigDecimal getPrecio() {
-		return precio;
-	}
-
-	public void setPrecio(BigDecimal precio) {
-		this.precio = precio;
-	}
-
-	public Integer getStock() {
-		return stock;
-	}
-
-	public void setStock(Integer stock) {
-		this.stock = stock;
-	}
-
-	public LocalDate getFechaCreacion() {
-		return fechaCreacion;
-	}
-
-	public void setFechaCreacion(LocalDate fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
-	public Boolean getActivo() {
-		return activo;
-	}
-
-	public void setActivo(Boolean activo) {
-		this.activo = activo;
-	}
-
-
-
-	public Long getIdCategoria() {
-		return idCategoria;
-	}
-
-	public void setIdCategoria(Long idCategoria) {
-		this.idCategoria = idCategoria;
-	}
-	public String getImagenUrl() {
-    return imagenUrl;
-}
-
-	public void setImagenUrl(String imagenUrl) {
-    this.imagenUrl = imagenUrl;
-}
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_perfume") // 👈 En el SQL se llama id_perfume, no id
+    @Column(name = "id_perfume") // Ajuste preventivo según tu estilo de BD
     private Long id;
 
-    @Column(nullable = false, length = 150)
     private String nombre;
-
+    
     @Column(columnDefinition = "TEXT")
     private String descripcion;
+    
+    private Double precio;
+    
+    @Column(name = "imagen_url")
+    private String imagenUrl;
 
-    @Column(nullable = false)
-    private BigDecimal precio; // 👈 En SQL es Decimal, en Java mejor usar BigDecimal
-
-    @Column(nullable = false)
+    @Column(name = "stock")
     private Integer stock;
 
-    @Column(name = "fecha_creacion", insertable = false, updatable = false)
-    private LocalDate fechaCreacion;
+    @Column(name = "en_oferta")
+    private Boolean enOferta;
 
-    @Column(nullable = false)
-    private Boolean activo = true;
-
-
-
-    @Column(name = "id_categoria")
-    private Long idCategoria;
-
-	@Column(name = "id_genero")
+    @Column(name = "id_genero")
     private Integer idGenero;
-	public Integer getIdGenero() { return idGenero; }
-	public void setIdGenero(Integer idGenero) { this.idGenero = idGenero; }
+    
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "id_categoria")
+    private Categoria categoriaEntity;
 
-	@Column(name = "imagen_url")
-		private String imagenUrl;
+    @ManyToOne
+    @JoinColumn(name = "id_marca") // Clave foránea que apunta a 'marcas'
+    private Marca marca;
 
-	@ManyToOne
-	@JoinColumn(name = "id_marca")
-	@JsonIgnoreProperties("perfumes")
-	private Marca marca;
+    @JsonProperty("idCategoria")
+    public Long getIdCategoria() {
+        return categoriaEntity != null ? categoriaEntity.getId() : null;
+    }
 
-	// Getter para la marca
-	public Marca getMarca() { return marca; }
+    @JsonProperty("categoria")
+    public String getCategoria() {
+        if (categoriaEntity == null || categoriaEntity.getId() == null) {
+            return null;
+        }
 
-	@Column(name = "en_oferta")
-private Boolean enOferta;
+        return switch (categoriaEntity.getId().intValue()) {
+            case 1 -> "amaderado";
+            case 2 -> "fresco";
+            case 3 -> "oriental";
+            case 4 -> "floral";
+            case 5 -> "aromatico";
+            default -> categoriaEntity.getNombre().toLowerCase();
+        };
+    }
 
-public Boolean getEnOferta() {
-    return enOferta;
-}
+    @JsonProperty("idGenero")
+    public Integer getIdGenero() {
+        return idGenero;
+    }
 
-public void setEnOferta(Boolean enOferta) {
-    this.enOferta = enOferta;
-}
-	
+    @JsonProperty("genero")
+    public String getGenero() {
+        return switch (idGenero == null ? 0 : idGenero) {
+            case 1 -> "hombre";
+            case 2 -> "mujer";
+            case 3 -> "unisex";
+            default -> "unisex";
+        };
+    }
+
+    @JsonIgnore
+    public Categoria getCategoriaEntity() {
+        return categoriaEntity;
+    }
+
+    public void setCategoriaEntity(Categoria categoriaEntity) {
+        this.categoriaEntity = categoriaEntity;
+    }
 }

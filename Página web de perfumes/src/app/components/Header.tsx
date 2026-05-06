@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
-import { Search, ShoppingBag, Menu, X, Heart, User } from 'lucide-react';
-import { useCart } from '../context/CartContext';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Search, ShoppingBag, Menu, X, Heart, User } from "lucide-react";
+import { useCart } from "../context/CartContext";
 
 interface HeaderProps {
   onSearchChange: (value: string) => void;
@@ -11,13 +11,15 @@ interface HeaderProps {
 export function Header({ onSearchChange, searchValue }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getCartCount, setIsCartOpen } = useCart();
+  const token = localStorage.getItem("token");
+  const isAdmin = localStorage.getItem("isAdmin") === "1";
 
   const navigation = [
-    { name: 'Inicio', href: '/' },
-    { name: 'Hombre', href: '/?gender=hombre' },
-    { name: 'Mujer', href: '/?gender=mujer' },
-    { name: 'Unisex', href: '/?gender=unisex' },
-    { name: 'Ofertas', href: '/?sale=true' }
+    { name: "Inicio", href: "/" },
+    { name: "Hombre", href: "/?gender=hombre" },
+    { name: "Mujer", href: "/?gender=mujer" },
+    { name: "Unisex", href: "/?gender=unisex" },
+    { name: "Ofertas", href: "/?sale=true" },
   ];
 
   return (
@@ -30,7 +32,9 @@ export function Header({ onSearchChange, searchValue }: HeaderProps) {
             <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-rose-500 rounded-full flex items-center justify-center">
               <span className="text-white text-xl">✦</span>
             </div>
-            <span className="text-2xl font-light tracking-wider">LUXE PARFUM</span>
+            <span className="text-2xl font-light tracking-wider">
+              ZEST PARFUMS
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -61,9 +65,21 @@ export function Header({ onSearchChange, searchValue }: HeaderProps) {
             </div>
 
             {/* Icons */}
-            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors hidden md:block">
-              <User className="w-5 h-5" />
-            </button>
+            {token ? (
+              <Link
+                to={isAdmin ? "/admin" : "/dashboard"}
+                className="hidden md:inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                {isAdmin ? "Admin" : "Mi cuenta"}
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden md:inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Iniciar sesión
+              </Link>
+            )}
             <button className="p-2 hover:bg-gray-100 rounded-full transition-colors hidden md:block">
               <Heart className="w-5 h-5" />
             </button>

@@ -1,0 +1,371 @@
+/* Luxurious Theme Styles - Enhanced with Dark Mode */
+
+/* Enhanced Gradients - Luxe Gold & Bronze */
+.gradient-luxury {
+  background: linear-gradient(135deg, #8b6f47 0%, #d4a574 50%, #c9a566 100%);
+}
+
+.gradient-rose-gold {
+  background: linear-gradient(135deg, #a68b6f 0%, #d4a574 50%, #c9a566 100%);
+}
+
+.gradient-premium {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 111, 71, 0.1) 0%,
+    rgba(212, 165, 116, 0.05) 50%,
+    rgba(139, 111, 71, 0.1) 100%
+  );
+}
+
+.dark .gradient-premium {
+  background: linear-gradient(
+    135deg,
+    rgba(212, 165, 116, 0.15) 0%,
+    rgba(201, 165, 102, 0.08) 50%,
+    rgba(212, 165, 116, 0.15) 100%
+  );
+}
+
+/* Smooth Transitions */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f1ed;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1a1715;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8b6f47 0%, #d4a574 100%);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7a6138 0%, #c9a566 100%);
+}
+
+/* Luxury Button Styles */
+.btn-luxury {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-luxury::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-luxury:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Subtle Glow Effect */
+.glow-subtle {
+  box-shadow: 0 0 20px rgba(139, 111, 71, 0.15);
+  transition: box-shadow 0.3s ease;
+}
+
+.glow-subtle:hover {
+  box-shadow: 0 0 40px rgba(139, 111, 71, 0.3);
+}
+
+.dark .glow-subtle {
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.2);
+}
+
+.dark .glow-subtle:hover {
+  box-shadow: 0 0 40px rgba(212, 165, 116, 0.4);
+}
+
+/* Card Hover Effects */
+.card-luxury {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card-luxury:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(139, 111, 71, 0.2);
+}
+
+.dark .card-luxury:hover {
+  box-shadow: 0 20px 40px rgba(212, 165, 116, 0.25);
+}
+
+/* Product Card Enhancements */
+.product-card-premium {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(139, 111, 71, 0.2);
+}
+
+.product-card-premium:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(139, 111, 71, 0.4);
+}
+
+.dark .product-card-premium {
+  background: rgba(26, 23, 21, 0.8);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+}
+
+.dark .product-card-premium:hover {
+  background: rgba(26, 23, 21, 0.95);
+  border-color: rgba(212, 165, 116, 0.4);
+}
+
+/* Refined Typography */
+.font-luxury-light {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+.font-luxury-medium {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* Animated Background */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-animated-luxury {
+  background: linear-gradient(-45deg, #8b6f47, #d4a574, #c9a566, #a68b6f);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.dark .bg-animated-luxury {
+  background: linear-gradient(-45deg, #d4a574, #c9a566, #8b6f47, #a68b6f);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* Luxury Input Styles */
+.input-luxury {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(139, 111, 71, 0.3);
+  transition: all 0.3s ease;
+}
+
+.input-luxury:focus {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 111, 71, 0.6);
+  box-shadow: 0 0 20px rgba(139, 111, 71, 0.2);
+}
+
+.dark .input-luxury {
+  background: rgba(42, 38, 34, 0.6);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+}
+
+.dark .input-luxury:focus {
+  background: rgba(42, 38, 34, 0.9);
+  border-color: rgba(212, 165, 116, 0.6);
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.2);
+}
+
+/* Premium Badge */
+.badge-premium {
+  background: linear-gradient(135deg, #8b6f47 0%, #d4a574 100%);
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.dark .badge-premium {
+  background: linear-gradient(135deg, #d4a574 0%, #c9a566 100%);
+  color: #0f0d0a;
+}
+
+/* Smooth Page Transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Header Luxury */
+.header-luxury {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139, 111, 71, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+.dark .header-luxury {
+  background: rgba(15, 13, 10, 0.7);
+  border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Section Dividers */
+.divider-luxury {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 111, 71, 0.3),
+    transparent
+  );
+  height: 1px;
+}
+
+.dark .divider-luxury {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 165, 116, 0.3),
+    transparent
+  );
+}
+
+/* Luxury Gradient Text */
+.gradient-text-luxury {
+  background: linear-gradient(
+    135deg,
+    #1a1410 0%,
+    #8b6f47 50%,
+    #1a1410 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .gradient-text-luxury {
+  background: linear-gradient(
+    135deg,
+    #faf9f7 0%,
+    #d4a574 50%,
+    #faf9f7 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Premium Spacing */
+.space-luxury {
+  letter-spacing: 0.08em;
+}
+
+/* Hover Scale Effect for Links */
+a.link-luxury {
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a.link-luxury::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8b6f47, #d4a574);
+  transition: width 0.3s ease;
+}
+
+a.link-luxury:hover::after {
+  width: 100%;
+}
+
+.dark a.link-luxury::after {
+  background: linear-gradient(90deg, #d4a574, #c9a566);
+}
+
+/* Box Shadow Luxury */
+.shadow-luxury {
+  box-shadow: 0 8px 32px rgba(139, 111, 71, 0.15);
+}
+
+.shadow-luxury-lg {
+  box-shadow: 0 20px 50px rgba(139, 111, 71, 0.2);
+}
+
+.dark .shadow-luxury {
+  box-shadow: 0 8px 32px rgba(212, 165, 116, 0.2);
+}
+
+.dark .shadow-luxury-lg {
+  box-shadow: 0 20px 50px rgba(212, 165, 116, 0.25);
+}
+
+/* Border Luxury */
+.border-luxury {
+  border: 1px solid rgba(139, 111, 71, 0.2);
+}
+
+.border-luxury-hover {
+  border: 1px solid rgba(139, 111, 71, 0.2);
+  transition: all 0.3s ease;
+}
+
+.border-luxury-hover:hover {
+  border-color: rgba(139, 111, 71, 0.5);
+  background: rgba(139, 111, 71, 0.05);
+}
+
+.dark .border-luxury {
+  border: 1px solid rgba(212, 165, 116, 0.2);
+}
+
+.dark .border-luxury-hover {
+  border: 1px solid rgba(212, 165, 116, 0.2);
+}
+
+.dark .border-luxury-hover:hover {
+  border-color: rgba(212, 165, 116, 0.5);
+  background: rgba(212, 165, 116, 0.05);
+}
+
+/* Dark Mode Transitions */
+* {
+  @apply transition-colors duration-300;
+}
+
+/* Hero Sections */
+.hero-luxury {
+  background: linear-gradient(135deg, rgba(232, 220, 200, 0.5), rgba(217, 199, 165, 0.3));
+}
+
+.dark .hero-luxury {
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.1), rgba(201, 165, 102, 0.05));
+}

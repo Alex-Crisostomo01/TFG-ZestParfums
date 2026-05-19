@@ -7,6 +7,9 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import ProtectedRoute from "./components/ProtectedRoute";
+import About from "./pages/About";
+import PerfumeRecommender from "./pages/PerfumeRecommender";
+import Wishlist from "./pages/Wishlist";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +27,18 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     Component: Register,
+  },
+  {
+    path: "/about",
+    Component: About,
+  },
+  {
+    path: "/recommender",
+    Component: PerfumeRecommender,
+  },
+  {
+    path: "/favorites",
+    Component: Wishlist,
   },
   {
     path: "/dashboard",

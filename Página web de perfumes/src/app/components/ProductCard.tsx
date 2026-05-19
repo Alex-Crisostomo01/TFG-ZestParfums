@@ -10,7 +10,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ perfume }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const { addToCart, toggleWishlist, isFavorite } = useCart();
+  const favorite = isFavorite(perfume.id);
 
   // Bloqueamos la propagación para que el clic en el botón no active el <Link>
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -24,6 +25,18 @@ export function ProductCard({ perfume }: ProductCardProps) {
 
     addToCart(perfume);
     toast.success(`${perfume.name} añadido al carrito`);
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(perfume);
+
+    if (favorite) {
+      toast.success(`${perfume.name} eliminado de tus deseados`);
+    } else {
+      toast.success(`${perfume.name} añadido a tus deseados`);
+    }
   };
 
   // Validación de seguridad para precios (evita crashes si el backend manda null)
@@ -62,13 +75,18 @@ export function ProductCard({ perfume }: ProductCardProps) {
           {/* Favorite Button */}
           <button
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-red-500 shadow-sm z-10"
+            onClick={handleToggleWishlist}
+            className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm z-10 ${
+              favorite
+                ? "bg-red-500 text-white hover:bg-red-600"
+                : "bg-white/90 hover:bg-white hover:text-red-500"
+            }`}
+            aria-label={favorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
           >
-            <Heart className="w-4 h-4" />
+            <Heart
+              className="w-4 h-4"
+              fill={favorite ? "currentColor" : "none"}
+            />
           </button>
 
           {/* Quick Add Button */}

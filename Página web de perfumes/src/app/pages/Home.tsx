@@ -173,13 +173,27 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background dark:bg-card">
       <Header onSearchChange={setSearchQuery} searchValue={searchQuery} />
       <Cart />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-20 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 dark:from-primary/10 dark:via-transparent dark:to-secondary/10 border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl sm:text-6xl font-light tracking-tight mb-4 text-foreground">
+              Descubre Fragancias Exclusivas
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Colección curada de perfumes premium de las mejores marcas del mundo
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6 text-center animate-pulse">
+          <div className="bg-destructive/20 dark:bg-destructive/30 border border-destructive/50 text-destructive/90 dark:text-destructive px-4 py-3 rounded mb-6 text-center animate-pulse">
             {error}
           </div>
         )}
@@ -191,7 +205,7 @@ export default function Home() {
             <div className="sticky top-28">
               <button
                 onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
-                className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors mb-4 shadow-sm"
+                className="w-12 h-12 bg-card dark:bg-muted border border-border rounded-lg flex items-center justify-center hover:bg-muted dark:hover:bg-muted/50 transition-colors mb-4 shadow-sm"
               >
                 {isDesktopFilterOpen ? (
                   <ChevronLeft size={20} />
@@ -212,20 +226,20 @@ export default function Home() {
           </div>
 
           <main className="flex-1">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
               <div>
-                <h1 className="text-2xl font-light mb-1">
+                <h2 className="text-3xl font-light mb-2 text-foreground">
                   {searchQuery
                     ? `Resultados para "${searchQuery}"`
-                    : "Catálogo Profesional"}
-                </h1>
-                <p className="text-sm text-gray-600">
+                    : "Nuestras Fragancias"}
+                </h2>
+                <p className="text-muted-foreground">
                   {filteredPerfumes.length} productos disponibles
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredPerfumes.map((perfume) => (
                 <ProductCard key={perfume.id} perfume={perfume} />
               ))}

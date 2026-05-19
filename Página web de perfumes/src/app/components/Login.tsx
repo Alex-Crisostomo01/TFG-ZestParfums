@@ -28,7 +28,7 @@ const Login: React.FC = () => {
             <span className="text-2xl">✦</span>
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-white">
-            Bienvenido a LUXE PARFUM
+            Bienvenido a ZEST PARFUM
           </h1>
           <p className="mt-2 text-sm text-slate-300">
             Inicia sesión para acceder a tu cuenta y descubrir el mundo de los

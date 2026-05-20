@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,16 +17,14 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
-/**
- * CONFIGURACIÓN GLOBAL DE SEGURIDAD
- * Justificación TFG: Define la política de acceso de la API. Se configura como 'Stateless'
- * ya que la autenticación se gestiona por tokens y no por sesiones de servidor (JSESSIONID).
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+
+    @Value("${FRONTEND_URL:http://localhost:5173}")
+    private String frontendUrl;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
@@ -36,21 +35,25 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://127.0.0.1:5173")); // Orígenes de React
+                config.setAllowedOriginPatterns(List.of(
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5173",
+                    frontendUrl
+                ));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
                 config.setAllowCredentials(true);
                 return config;
             }))
-            .csrf(csrf -> csrf.disable()) // Deshabilitado porque usamos JWT
+            .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // Login/Registro público
-                .requestMatchers("/api/marcas/**").permitAll() // Catálogo público
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/marcas/**").permitAll()
                 .requestMatchers("/api/perfumes/**").permitAll()
-                .requestMatchers("/api/categorias/**").permitAll() // Categorías públicas para filtros
-                .requestMatchers("/api/admin/**", "/admin", "/admin/**").hasRole("ADMIN") // Solo admin puede gestionar recursos
-                .anyRequest().authenticated() // El resto requiere Token
+                .requestMatchers("/api/categorias/**").permitAll()
+                .requestMatchers("/api/admin/**", "/admin", "/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
